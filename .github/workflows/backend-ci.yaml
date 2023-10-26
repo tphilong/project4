@@ -1,0 +1,84 @@
+name: 'Backend Continuous Integration'
+on:
+  workflow_dispatch:
+
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  lint-job:
+    name: 'Lint Job'
+    runs-on: ubuntu-latest   # Use the latest Ubuntu runner
+
+    steps:
+      # Check out the code to the runner
+      - name: checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.11'
+
+      - name: Restore cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          
+      - name: Install dependencies
+        run: |
+          cd ./starter/backend
+          python -m pip install --upgrade pip
+          pip install pipenv
+          pipenv install --dev
+
+      - name: Run lint check
+        run: cd ./starter/backend && pipenv run lint
+
+  test-job:
+    name: 'Test Job'
+    runs-on: ubuntu-latest   # Use the latest Ubuntu runner
+
+    steps:
+      # Check out the code to the runner
+      - name: checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.11'
+
+      - name: Restore cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          
+      - name: Install dependencies
+        run: |
+          cd ./starter/backend
+          python -m pip install --upgrade pip
+          pip install pipenv
+          pipenv install pytest --dev
+          pipenv install --dev
+
+      - name: Run tests
+        run: |
+          cd ./starter/backend 
+          pipenv run test
+        
+  build:
+    needs: [lint-job, test-job]
+    runs-on: ubuntu-latest 
+
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v3
+
+      - name: Build Docker Image
+        run: |
+          cd ./starter/backend
+          docker build -t backend .

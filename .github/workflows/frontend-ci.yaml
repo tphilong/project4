@@ -1,0 +1,104 @@
+name: 'Frontend Continuous Integration'
+on:
+  workflow_dispatch:
+
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  lint-job:
+    name: Linting
+    runs-on: ubuntu-latest 
+
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup nodejs
+        uses: actions/setup-node@v3
+        with:
+          node-version: 14
+
+      - name: Cache dependencies
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Install dependencies
+        run: cd ./starter/frontend && npm install
+
+      - name: Install prettier
+        run: |
+          cd ./starter/frontend 
+          npm install prettier@2.8.8 --save-dev
+
+      - name: Run lint check
+        run: cd ./starter/frontend && npm run lint
+
+  test-job:
+    name: Testing job
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup nodejs
+        uses: actions/setup-node@v3
+        with:
+          node-version: 14
+
+      - name: Cache dependencies
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Install dependencies
+        run: cd ./starter/frontend && npm install
+
+      - name: Run test
+        run: cd ./starter/frontend && npm run test
+
+  build:
+    needs: [lint-job, test-job]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup nodejs
+        uses: actions/setup-node@v3
+        with:
+          node-version: 14
+      
+      - name: Cache dependencies
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Install prettier
+        run: |
+          cd ./starter/frontend 
+          npm install prettier@2.8.8 --save-dev
+
+      - name: Install dependencies
+        run: cd ./starter/frontend && npm install
+
+      - name: Run test
+        run: cd ./starter/frontend && npm run test
+      
+      - name: Build Docker Image
+        run: |
+          cd ./starter/frontend
+          docker build -t frontend .
+
+
+      
