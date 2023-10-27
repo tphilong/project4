@@ -76,9 +76,9 @@ jobs:
 
       - name: Deploy to Kubernetes
         run: |
-          aws eks update-kubeconfig --name cluster --region us-east-1
           cd ./starter/backend/k8s
-          kustomize edit set image backend=${{ vars.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/backend:latest
-          kustomize build | kubectl apply -f -
+          curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
+          ./kustomize edit set image backend=${{ vars.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/backend:latest
+          ./kustomize build | kubectl apply -f -
           
 
