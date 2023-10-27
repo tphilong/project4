@@ -1,4 +1,4 @@
-name: 'Frontend Continuous Deployment'
+name: 'Frontend CD'
 on:
   workflow_dispatch:
 
@@ -69,7 +69,7 @@ jobs:
           cd ./starter/frontend
           docker push ${{ vars.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
       
-      - name: Kubeconfig Auth
+      - name: Kubeconfig Login
         run: |
           aws eks update-kubeconfig --name cluster --region ${{ vars.AWS_DEFAULT_REGION }}
       

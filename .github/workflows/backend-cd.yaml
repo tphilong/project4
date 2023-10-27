@@ -70,7 +70,7 @@ jobs:
           cd ./starter/backend
           docker push ${{ vars.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/backend:latest
       
-      - name: Kubeconfig Auth
+      - name: Kubeconfig Login
         run: |
           aws eks update-kubeconfig --name cluster --region ${{ vars.AWS_DEFAULT_REGION }}
           kubectl config current-context
