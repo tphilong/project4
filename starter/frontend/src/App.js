@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import MovieList from './components/MovieList';
 import MovieDetails from './components/MovieDetails';
+import axios from 'axios';
 import './App.css';
 
 export default function App() {
@@ -9,7 +10,9 @@ export default function App() {
   const handleMovieClick = (movie) => {
     setSelectedMovie(movie);
   };
-
+  export default axios.create({
+    baseURL: process.env.REACT_APP_MOVIE_API_URL
+});
   return (
     <div className="container">
       <h1>Movie List</h1>
