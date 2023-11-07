@@ -57,6 +57,7 @@ jobs:
       - name: Build Docker image
         run: |
           cd ./starter/frontend
+          echo ${{ vars.REACT_APP_MOVIE_API_URL }}
           docker build -t frontend --build-arg=REACT_APP_MOVIE_API_URL=${{ vars.REACT_APP_MOVIE_API_URL }} .
       
       - name: Tag Docker Image
